@@ -34,6 +34,7 @@
 NSString *MBTableGridDidChangeSelectionNotification		= @"MBTableGridDidChangeSelectionNotification";
 NSString *MBTableGridDidMoveColumnsNotification			= @"MBTableGridDidMoveColumnsNotification";
 NSString *MBTableGridDidMoveRowsNotification			= @"MBTableGridDidMoveRowsNotification";
+CGFloat MBTableHeaderMinimumColumnWidth = 20.0f;
 
 #pragma mark -
 #pragma mark Drag Types
@@ -224,13 +225,18 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
     // Set new width of column
     float currentWidth = [columnWidths[columnKey] floatValue];
     currentWidth += distance;
+	
+	if (currentWidth < MBTableHeaderMinimumColumnWidth) {
+		currentWidth = MBTableHeaderMinimumColumnWidth;
+	}
+	
     columnWidths[columnKey] = @(currentWidth);
     
     // Update views with new sizes
     [contentView setFrameSize:NSMakeSize(NSWidth(contentView.frame) + distance, NSHeight(contentView.frame))];
     [columnHeaderView setFrameSize:NSMakeSize(NSWidth(columnHeaderView.frame) + distance, NSHeight(columnHeaderView.frame))];
     [contentView setNeedsDisplay:YES];
-    [columnHeaderView setNeedsDisplay:YES];
+    [columnHeaderView setNeedsDisplayInRect:columnHeaderView.frame];
     
 }
 
