@@ -88,7 +88,15 @@
 	NSDictionary *attributes = @{NSFontAttributeName: font, NSForegroundColorAttributeName: color};
 	NSAttributedString *string = [[NSAttributedString alloc] initWithString:[self stringValue] attributes:attributes];
 	
-	NSRect textFrame = NSMakeRect(cellFrame.origin.x + (cellFrame.size.width-[string size].width)/2, cellFrame.origin.y + (cellFrame.size.height - [string size].height)/2, [string size].width, [string size].height);
+	static CGFloat TEXT_PADDING = 6;
+
+	NSRect textFrame;
+
+	if (self.orientation == MBTableHeaderHorizontalOrientation) {
+		textFrame = NSMakeRect(cellFrame.origin.x + TEXT_PADDING, cellFrame.origin.y + (cellFrame.size.height - [string size].height)/2, cellFrame.size.width - TEXT_PADDING, [string size].height);
+	} else {
+		textFrame = NSMakeRect(cellFrame.origin.x + (cellFrame.size.width-[string size].width)/2, cellFrame.origin.y + (cellFrame.size.height - [string size].height)/2, [string size].width, [string size].height);
+	}
 	
 	[[NSGraphicsContext currentContext] saveGraphicsState];
 	NSShadow *textShadow = [[NSShadow alloc] init];
@@ -97,7 +105,8 @@
 	[textShadow setShadowColor:[NSColor colorWithDeviceWhite:1.0 alpha:0.8]];
 	[textShadow set];
 	
-	[string drawInRect:textFrame];
+//	[string drawInRect:textFrame];
+	[string drawWithRect:textFrame options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin];
 	
 	[[NSGraphicsContext currentContext] restoreGraphicsState];
 	
