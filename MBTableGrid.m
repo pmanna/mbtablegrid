@@ -331,6 +331,13 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	// If the Shift key was not held, move the selection
 	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndex:column];
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndex:(row-1)];
+	
+	if (row > 0) {
+		NSRect cellRect = [self frameOfCellAtColumn:column row:row - 1];
+		cellRect = [self convertRect:cellRect toView:self.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+
 }
 
 - (void)moveUpAndModifySelection:(id)sender
@@ -361,6 +368,15 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		firstRow--;
 	}
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstRow, lastRow-firstRow+1)];	
+
+	NSUInteger column = [self.selectedColumnIndexes firstIndex];
+	
+	if (firstRow - 1 > 0) {
+		NSRect cellRect = [self frameOfCellAtColumn:column row:firstRow - 1];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+
 }
 
 - (void)moveDown:(id)sender
@@ -383,6 +399,13 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	// If the Shift key was not held, move the selection
 	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndex:column];
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndex:(row+1)];
+	
+	if (row + 1 < [self numberOfRows]) {
+		NSRect cellRect = [self frameOfCellAtColumn:column row:row + 1];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+	
 }
 
 - (void)moveDownAndModifySelection:(id)sender
@@ -413,6 +436,15 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		firstRow++;
 	}
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstRow, lastRow-firstRow+1)];	
+
+	NSUInteger column = [self.selectedColumnIndexes lastIndex];
+
+	if (lastRow + 1 < [self numberOfRows]) {
+		NSRect cellRect = [self frameOfCellAtColumn:column row:lastRow + 1];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+
 }
 
 - (void)moveLeft:(id)sender
@@ -428,6 +460,12 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		row = [self.selectedRowIndexes lastIndex];
 	}
 	
+	if (column > 0) {
+		NSRect cellRect = [self frameOfCellAtColumn:column - 1 row:row];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+	
 	// If we're already at the first column, do nothing
 	if(column <= 0)
 		return;
@@ -435,6 +473,7 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	// If the Shift key was not held, move the selection
 	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndex:(column-1)];
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndex:row];
+	
 }
 
 - (void)moveLeftAndModifySelection:(id)sender
@@ -452,6 +491,15 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	if([self.selectedColumnIndexes count] == 1) {
 		stickyColumnEdge = MBTableGridRightEdge;
 	}
+	
+	NSUInteger row = [self.selectedRowIndexes firstIndex];
+
+	if (firstColumn > 0) {
+		NSRect cellRect = [self frameOfCellAtColumn:firstColumn - 1 row:row];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+
 	
 	// We can't expand past the first column
 	if(stickyColumnEdge == MBTableGridRightEdge && firstColumn <= 0)
@@ -487,6 +535,12 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	// If the Shift key was not held, move the selection
 	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndex:(column+1)];
 	self.selectedRowIndexes = [NSIndexSet indexSetWithIndex:row];
+	
+	if (column + 1 < [self numberOfColumns]) {
+		NSRect cellRect = [self frameOfCellAtColumn:column + 1 row:row];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
 }
 
 - (void)moveRightAndModifySelection:(id)sender
@@ -516,7 +570,28 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		// If the bottom edge is sticky, expand the contraction
 		firstColumn++;
 	}
-	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstColumn, lastColumn-firstColumn+1)];	
+	self.selectedColumnIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(firstColumn, lastColumn-firstColumn+1)];
+	
+	NSUInteger row = [self.selectedRowIndexes lastIndex];
+
+	if (lastColumn + 1 < [self numberOfColumns]) {
+		NSRect cellRect = [self frameOfCellAtColumn:lastColumn + 1 row:row];
+		cellRect = [self convertRect:cellRect toView:contentScrollView.contentView];
+		[self scrollToArea:cellRect animate:NO];
+	}
+
+}
+
+- (void)scrollToArea:(NSRect)area animate:(BOOL)shouldAnimate {
+    if (shouldAnimate) {
+        [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+            [context setAllowsImplicitAnimation:YES];
+            [self.contentView scrollRectToVisible:area];
+        } completionHandler:^{
+        }];
+    } else {
+        [contentScrollView.contentView scrollRectToVisible:area];
+    }
 }
 
 - (void)selectAll:(id)sender
