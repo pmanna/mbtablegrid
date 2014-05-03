@@ -938,6 +938,32 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
         
     }
 
+	// When data are reloaded, it is possible that previous internal data refer to rows or columns that are no longer
+	// valid, so we validate them here.
+
+	// Validate selectedRowIndexes
+	if ([selectedRowIndexes firstIndex] >= _numberOfRows || [selectedRowIndexes lastIndex] >= _numberOfRows) {
+		// Select an existing row close to the first previously selected row
+		NSUInteger rowToSelect = ((_numberOfRows == 0) ?
+								  0 :
+								  MIN([selectedRowIndexes firstIndex], _numberOfRows - 1));
+		[self setSelectedRowIndexes:[NSIndexSet indexSetWithIndex:rowToSelect]];
+	}
+
+	// Validate selectedColumnIndexes
+	if ([selectedColumnIndexes firstIndex] >= _numberOfColumns || [selectedColumnIndexes lastIndex] >= _numberOfColumns) {
+		// Select an existing column close to the first previously selected column
+		NSUInteger columnToSelect = ((_numberOfColumns == 0) ?
+									 0 :
+									 MIN([selectedColumnIndexes firstIndex], _numberOfColumns - 1));
+		[self setSelectedRowIndexes:[NSIndexSet indexSetWithIndex:columnToSelect]];
+	}
+
+    // Validate columnWidths
+	// We reset the width dictionary and let -_widthForColumn: recreate it as needed
+	columnWidths = [NSMutableDictionary new];
+
+
 	// Update the content view's size
 	NSRect contentRect = NSZeroRect;
 
