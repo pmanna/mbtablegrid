@@ -937,13 +937,18 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
         _numberOfRows = 0;
         
     }
-    
+
 	// Update the content view's size
-	NSUInteger lastColumn = _numberOfColumns-1;
-	NSUInteger lastRow = _numberOfRows-1;
-	NSRect bottomRightCellFrame = [contentView frameOfCellAtColumn:lastColumn row:lastRow];
+	NSRect contentRect = NSZeroRect;
+
+	if (_numberOfColumns > 0 && _numberOfRows > 0) {
+		NSUInteger lastColumn = _numberOfColumns-1; // _numberOfColumns must be > 0
+		NSUInteger lastRow = _numberOfRows-1; // _numberOfRows must be > 0
+		NSRect bottomRightCellFrame = [contentView frameOfCellAtColumn:lastColumn row:lastRow];
 	
-	NSRect contentRect = NSMakeRect([contentView frame].origin.x, [contentView frame].origin.y, NSMaxX(bottomRightCellFrame), NSMaxY(bottomRightCellFrame));
+		contentRect = NSMakeRect([contentView frame].origin.x, [contentView frame].origin.y, NSMaxX(bottomRightCellFrame), NSMaxY(bottomRightCellFrame));
+	}
+
 	[contentView setFrameSize:contentRect.size];
 	
 	// Update the column header view's size
