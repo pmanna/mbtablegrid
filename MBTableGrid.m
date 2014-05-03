@@ -1299,8 +1299,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 {
     
     NSString *column = [NSString stringWithFormat:@"column%lu", columnIndex];
-    if (columnIndex < columnWidths.count) {
-        return [columnWidths[column] floatValue];
+	NSNumber *widthObject = columnWidths[column];
+
+    if (widthObject != nil) {
+        return [widthObject floatValue];
     } else {
         return [self _setWidthForColumn:columnIndex];
     }
