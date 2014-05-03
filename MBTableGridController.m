@@ -251,7 +251,7 @@
 
 - (IBAction)removeSelectedRows:(id)sender
 {
-	if ([columns count] == 0) {
+	if ([columns count] == 0 || [columns[0] count] == 0) {
 		return;
 	}
 
@@ -266,6 +266,10 @@
 
 - (IBAction)removeSelectedColumns:(id)sender
 {
+	if ([columns count] == 0) {
+		return;
+	}
+
     [columns removeObjectsAtIndexes:[tableGrid selectedColumnIndexes]];
 	[tableGrid reloadData];
 }

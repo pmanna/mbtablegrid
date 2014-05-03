@@ -956,7 +956,7 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		NSUInteger columnToSelect = ((_numberOfColumns == 0) ?
 									 0 :
 									 MIN([selectedColumnIndexes firstIndex], _numberOfColumns - 1));
-		[self setSelectedRowIndexes:[NSIndexSet indexSetWithIndex:columnToSelect]];
+		[self setSelectedColumnIndexes:[NSIndexSet indexSetWithIndex:columnToSelect]];
 	}
 
     // Validate columnWidths
