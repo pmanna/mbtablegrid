@@ -220,7 +220,7 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 {
     
     // Get column key
-    NSString *columnKey = [NSString stringWithFormat:@"column%lu", columnIndex];
+    NSNumber *columnKey = @(columnIndex);
 
     // Set new width of column
     float currentWidth = [columnWidths[columnKey] floatValue];
@@ -1323,35 +1323,28 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (float)_widthForColumn:(NSUInteger)columnIndex
 {
-    
-    NSString *column = [NSString stringWithFormat:@"column%lu", columnIndex];
-	NSNumber *widthObject = columnWidths[column];
+	NSNumber *widthObject = columnWidths[@(columnIndex)];
 
     if (widthObject != nil) {
         return [widthObject floatValue];
     } else {
         return [self _setWidthForColumn:columnIndex];
     }
-    
 }
 
 - (float)_setWidthForColumn:(NSUInteger)columnIndex
 {
-    
     if ([[self dataSource] respondsToSelector:@selector(tableGrid:setWidthForColumn:)]) {
-        
-        NSString *column = [NSString stringWithFormat:@"column%lu", columnIndex];
-
         float width = [[self dataSource] tableGrid:self setWidthForColumn:columnIndex];
-        columnWidths[column] = COLUMNFLOATSIZE(width);
+        columnWidths[@(columnIndex)] = @(width);
     
         return width;
         
     } else {
         return MBTableGridColumnHeaderWidth;
     }
-    
 }
+
 - (BOOL)_canEditCellAtColumn:(NSUInteger)columnIndex row:(NSUInteger)rowIndex
 {
 	// Can't edit if the data source doesn't implement the method

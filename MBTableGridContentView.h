@@ -28,8 +28,6 @@
 #define MBTableGridColumnHeaderHeight 19.0
 #define MBTableGridColumnHeaderWidth 60
 #define MBTableGridRowHeaderWidth 40.0
-#define COLUMNFLOATSIZE(x) [NSNumber numberWithFloat:x]
-#define COLUMNKEY(idx) [NSString stringWithFormat:@"column%lu",idx]
 
 @class MBTableGrid, MBTableGridCell;
 
