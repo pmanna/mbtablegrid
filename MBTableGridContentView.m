@@ -97,6 +97,10 @@
     
 	NSUInteger numberOfColumns = [self tableGrid].numberOfColumns;
 	NSUInteger numberOfRows = [self tableGrid].numberOfRows;
+
+	if (numberOfColumns == 0 || numberOfRows == 0) {
+		return;
+	}
 	
 	NSUInteger firstColumn = NSNotFound;
 	NSUInteger lastColumn = numberOfColumns - 1;
