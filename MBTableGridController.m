@@ -249,6 +249,53 @@
 	[tableGrid reloadData];
 }
 
+- (IBAction)removeSelectedRows:(id)sender
+{
+	if ([columns count] == 0) {
+		return;
+	}
+
+	NSIndexSet *selectedRowIndexes = [tableGrid selectedRowIndexes];
+
+	for (NSMutableArray *column in columns) {
+		[column removeObjectsAtIndexes:selectedRowIndexes];
+	}
+
+	[tableGrid reloadData];
+}
+
+- (IBAction)removeSelectedColumns:(id)sender
+{
+    [columns removeObjectsAtIndexes:[tableGrid selectedColumnIndexes]];
+	[tableGrid reloadData];
+}
+
+- (IBAction)populateGridWithPositions:(id)sender
+{
+	NSUInteger numberOfColumns = [columns count];
+	if (numberOfColumns == 0) {
+		return;
+	}
+
+	NSUInteger numberOfRows = [columns[0] count];
+	if (numberOfRows == 0) {
+		return;
+	}
+	
+	unsigned int columnIndex = 0;
+
+	for (NSMutableArray *column in columns) {
+		for (NSUInteger rowIndex = 0; rowIndex < numberOfRows; ++rowIndex) {
+			column[rowIndex] = [NSString stringWithFormat:@"%c%lu",
+								columnIndex + 'A',
+								rowIndex + 1];
+		}
+		++columnIndex;
+	}
+
+	[tableGrid reloadData];
+}
+
 @end
 
 @implementation NSMutableArray (SwappingAdditions)
