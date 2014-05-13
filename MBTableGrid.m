@@ -148,8 +148,8 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contentViewDidScroll:) name:NSViewBoundsDidChangeNotification object:[contentScrollView contentView]];
 	
 		// Set the default selection
-		self.selectedColumnIndexes = [NSIndexSet indexSetWithIndex:0];
-		self.selectedRowIndexes = [NSIndexSet indexSetWithIndex:0];
+		self.selectedColumnIndexes = [NSIndexSet indexSet];
+		self.selectedRowIndexes = [NSIndexSet indexSet];
 		self.allowsMultipleSelection = YES;
 		
 		// Set the default sticky edges
@@ -313,6 +313,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveUp:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+    }
+
 	NSUInteger column = [self.selectedColumnIndexes firstIndex];
 	NSUInteger row = [self.selectedRowIndexes firstIndex];
 	
@@ -342,6 +346,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveUpAndModifySelection:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+    }
+
 	if(shouldOverrideModifiers) {
 		[self moveLeft:sender];
 		shouldOverrideModifiers = NO;
@@ -381,6 +389,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveDown:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+    }
+
 	NSUInteger column = [self.selectedColumnIndexes firstIndex];
 	NSUInteger row = [self.selectedRowIndexes firstIndex];
 	
@@ -410,6 +422,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveDownAndModifySelection:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+    }
+
 	if(shouldOverrideModifiers) {
 		[self moveDown:sender];
 		shouldOverrideModifiers = NO;
@@ -449,6 +465,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveLeft:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+		return;
+	}
+
 	NSUInteger column = [self.selectedColumnIndexes firstIndex];
 	NSUInteger row = [self.selectedRowIndexes firstIndex];
 	
@@ -478,6 +498,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveLeftAndModifySelection:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+	}
+
 	if(shouldOverrideModifiers) {
 		[self moveLeft:sender];
 		shouldOverrideModifiers = NO;
@@ -517,6 +541,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveRight:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+	}
+
 	NSUInteger column = [self.selectedColumnIndexes firstIndex];
 	NSUInteger row = [self.selectedRowIndexes firstIndex];
 	
@@ -545,6 +573,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)moveRightAndModifySelection:(id)sender
 {
+    if (_numberOfRows == 0 || _numberOfColumns == 0) {
+        return;
+	}
+
 	if(shouldOverrideModifiers) {
 		[self moveRight:sender];
 		shouldOverrideModifiers = NO;
@@ -605,6 +637,10 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 
 - (void)deleteBackward:(id)sender
 {
+	if (_numberOfRows == 0 || _numberOfColumns == 0) {
+		return;
+	}
+
 	// Clear the contents of every selected cell
 	NSUInteger column = [self.selectedColumnIndexes firstIndex];
 	while(column <= [self.selectedColumnIndexes lastIndex]) {
@@ -942,21 +978,39 @@ NSString *MBTableGridRowDataType = @"MBTableGridRowDataType";
 	// valid, so we validate them here.
 
 	// Validate selectedRowIndexes
-	if ([selectedRowIndexes firstIndex] >= _numberOfRows || [selectedRowIndexes lastIndex] >= _numberOfRows) {
-		// Select an existing row close to the first previously selected row
-		NSUInteger rowToSelect = ((_numberOfRows == 0) ?
-								  0 :
-								  MIN([selectedRowIndexes firstIndex], _numberOfRows - 1));
-		[self setSelectedRowIndexes:[NSIndexSet indexSetWithIndex:rowToSelect]];
+	{
+		// Assume everything is fine
+		NSIndexSet *validatedRowIndexes = selectedRowIndexes;
+
+		if (_numberOfRows == 0) {
+			validatedRowIndexes = [NSIndexSet indexSet];
+		} else if ([selectedRowIndexes count] == 0) {
+			validatedRowIndexes = [NSIndexSet indexSetWithIndex:0];
+		} else if ([selectedRowIndexes firstIndex] >= _numberOfRows || [selectedRowIndexes lastIndex] >= _numberOfRows) {
+			// Select an existing row close to the first previously selected row
+			NSUInteger rowToSelect = MIN([selectedRowIndexes firstIndex], _numberOfRows - 1);
+			validatedRowIndexes = [NSIndexSet indexSetWithIndex:rowToSelect];
+		}
+
+		[self setSelectedRowIndexes:validatedRowIndexes];
 	}
 
 	// Validate selectedColumnIndexes
-	if ([selectedColumnIndexes firstIndex] >= _numberOfColumns || [selectedColumnIndexes lastIndex] >= _numberOfColumns) {
-		// Select an existing column close to the first previously selected column
-		NSUInteger columnToSelect = ((_numberOfColumns == 0) ?
-									 0 :
-									 MIN([selectedColumnIndexes firstIndex], _numberOfColumns - 1));
-		[self setSelectedColumnIndexes:[NSIndexSet indexSetWithIndex:columnToSelect]];
+    {
+        // Assume everything is fine
+        NSIndexSet *validatedColumnIndexes = selectedColumnIndexes;
+
+        if (_numberOfColumns == 0) {
+            validatedColumnIndexes = [NSIndexSet indexSet];
+        } else if ([selectedColumnIndexes count] == 0) {
+            validatedColumnIndexes = [NSIndexSet indexSetWithIndex:0];
+        } else if ([selectedColumnIndexes firstIndex] >= _numberOfColumns || [selectedColumnIndexes lastIndex] >= _numberOfColumns) {
+            // Select an existing column close to the first previously selected column
+            NSUInteger columnToSelect = MIN([selectedColumnIndexes firstIndex], _numberOfColumns - 1);
+            validatedColumnIndexes = [NSIndexSet indexSetWithIndex:columnToSelect];
+        }
+
+		[self setSelectedColumnIndexes:validatedColumnIndexes];
 	}
 
     // Validate columnWidths
