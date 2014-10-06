@@ -92,6 +92,21 @@
 }
 
 
+- (void)drawCellAtRow:(NSUInteger)row column:(NSUInteger)column
+{
+	NSRect cellFrame = [self frameOfCellAtColumn:column row:row];
+	// Only draw the cell if we need to
+	if ([self needsToDrawRect:cellFrame] && !(row == editedRow && column == editedColumn)) {
+		
+		NSColor *backgroundColor = [[self tableGrid] _backgroundColorForColumn:column row:row] ?: [NSColor whiteColor];
+		
+		
+		[_cell setObjectValue:[[self tableGrid] _objectValueForColumn:column row:row]];
+		[_cell drawWithFrame:cellFrame inView:self withBackgroundColor:backgroundColor];// Draw background color
+		
+	}
+}
+
 - (void)drawRect:(NSRect)rect
 {
     
@@ -137,17 +152,7 @@
 	while (column <= lastColumn) {
 		row = firstRow;
 		while (row <= lastRow) {
-			NSRect cellFrame = [self frameOfCellAtColumn:column row:row];
-			// Only draw the cell if we need to
-			if ([self needsToDrawRect:cellFrame] && !(row == editedRow && column == editedColumn)) {
-                
-                NSColor *backgroundColor = [[self tableGrid] _backgroundColorForColumn:column row:row] ?: [NSColor whiteColor];
-                
-                
-				[_cell setObjectValue:[[self tableGrid] _objectValueForColumn:column row:row]];
-				[_cell drawWithFrame:cellFrame inView:self withBackgroundColor:backgroundColor];// Draw background color
-                
-			}
+			[self drawCellAtRow:row column:column];
 			row++;
 		}
 		column++;
@@ -538,10 +543,10 @@
 - (NSRect)rectOfRow:(NSUInteger)rowIndex
 {
     
-	float heightForRow = 20.0;
+	float heightForRow = MBTableGridRowHeaderHeight;
 	NSRect rect = NSMakeRect(0, 0, [self frame].size.width, heightForRow);
 	
-	rect.origin.y += 20.0 * rowIndex;
+	rect.origin.y += MBTableGridRowHeaderHeight * rowIndex;
 	
 	/*NSUInteger i = 0;
 	while(i < rowIndex) {

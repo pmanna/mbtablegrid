@@ -27,6 +27,7 @@
 
 #define MBTableGridColumnHeaderHeight 19.0
 #define MBTableGridColumnHeaderWidth 60
+#define MBTableGridRowHeaderHeight 14.0
 #define MBTableGridRowHeaderWidth 40.0
 
 @class MBTableGrid, MBTableGridCell;

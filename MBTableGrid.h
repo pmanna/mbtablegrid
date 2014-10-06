@@ -625,24 +625,11 @@ typedef enum {
 @optional
 
 /**
- * @brief		Returnd the width of given column.
- *
- * @param		aTableGrid		The table grid that sent the message.
- * @param		columnIndex		A column in \c aTableGrid.
- *
- * @see			tableGrid:setWidthForColumn:
- */
-- (float)tableGrid:(MBTableGrid *)aTableGrid withForColumn:(NSUInteger)columnIndex;
-
-@optional
-
-/**
  * @brief		Sets the column width for the given column.
  *
  * @param		aTableGrid		The table grid that sent the message.
  * @param		columnIndex		A column in \c aTableGrid.
  *
-  * @see			tableGrid:widthForColumn:
  */
 - (float)tableGrid:(MBTableGrid *)aTableGrid setWidthForColumn:(NSUInteger)columnIndex;
 
